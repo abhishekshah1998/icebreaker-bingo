@@ -1,490 +1,117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Icebreaker Bingo Game</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#15271f" />
+    <meta name="description" content="Create and share a playful icebreaker bingo card for your next gathering." />
+    <title>Icebreaker Bingo</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Icebreaker Bingo home">
+        <span class="brand-mark" aria-hidden="true">B</span><span>Icebreaker Bingo</span>
+      </a>
+      <button id="howButton" class="text-button" type="button">How it works</button>
+    </header>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Open+Sans:wght@400;600;700&display=swap');
+    <main>
+      <section id="setupView" class="setup-view" aria-labelledby="setupTitle">
+        <div class="hero-copy">
+          <p class="eyebrow">Better conversations, one square at a time</p>
+          <h1 id="setupTitle">Turn any room into a conversation.</h1>
+          <p class="hero-lede">Create a bingo card for your gathering, share one link, and let guests do the mingling. No sign-up required.</p>
+          <div class="feature-row" aria-label="Product highlights">
+            <span>Private by design</span><span>Works on any phone</span><span>Ready in 2 minutes</span>
+          </div>
+        </div>
 
-/* THEME TOKENS */
-:root{
-  --pink-1:#FF69B4; --pink-2:#FF1493;
-  --pink-3:#ffeef5; --pink-4:#FFE4E9;
-  --pink-border:#FFB6C1;
-  --gold-1:#FFD700; --gold-2:#FFA500;
-  --text:#222; --text-inv:#fff;
-  --tile-h: clamp(100px, 26vw, 150px);
-  --radius: 14px;
-  --shadow: 0 10px 30px rgba(0,0,0,.1);
-  --inset: 0 0 0 3px rgba(255,105,180,.25) inset;
-  --font-body:'Open Sans', Arial, sans-serif;
-  --font-title:'Fredoka One', cursive;
-}
+        <form id="setupForm" class="setup-card" novalidate>
+          <div class="card-heading">
+            <div><p class="step-label">Create your game</p><h2>What are we celebrating?</h2></div>
+            <span class="card-number" aria-hidden="true">01</span>
+          </div>
+          <label for="eventName">Event name</label>
+          <input id="eventName" name="eventName" type="text" maxlength="60" value="Tonight's Icebreaker" autocomplete="off" />
+          <div class="prompt-heading"><label for="prompts">Bingo prompts</label><span id="promptCount" class="count-pill">24 / 24</span></div>
+          <p class="field-help">One prompt per line. Add at least 24 unique prompts.</p>
+          <textarea id="prompts" name="prompts" rows="12" spellcheck="true"></textarea>
+          <div class="template-row">
+            <span>Start with:</span>
+            <button class="chip" type="button" data-pack="social">Social mixer</button>
+            <button class="chip" type="button" data-pack="work">Team event</button>
+            <button class="chip" type="button" data-pack="wedding">Wedding</button>
+          </div>
+          <p id="setupError" class="form-error" role="alert"></p>
+          <button class="primary-button wide" type="submit">Create my bingo <span aria-hidden="true">→</span></button>
+          <p class="privacy-note">No account or database. Your game setup travels in the share link.</p>
+        </form>
+      </section>
 
-@media (prefers-color-scheme: dark){
-  :root{
-    --text:#eee; --text-inv:#111;
-    --pink-3:#2a2330; --pink-4:#362a3c;
-    --pink-border:#5a3b5a;
-    --shadow: 0 10px 30px rgba(0,0,0,.4);
-    --inset: 0 0 0 3px rgba(255,255,255,.12) inset;
-  }
-}
+      <section id="gameView" class="game-view" hidden aria-labelledby="gameTitle">
+        <div class="game-toolbar">
+          <button id="backButton" class="text-button back-button" type="button">← Edit game</button>
+          <div class="toolbar-actions">
+            <button id="shareButton" class="secondary-button" type="button">Copy game link</button>
+            <button id="printButton" class="icon-button" type="button" aria-label="Print bingo card" title="Print card">⌁</button>
+            <button id="moreButton" class="icon-button" type="button" aria-expanded="false" aria-controls="gameMenu" aria-label="More game options">•••</button>
+            <div id="gameMenu" class="game-menu" hidden>
+              <button id="newCardButton" type="button">Shuffle into a new card</button>
+              <button id="resetButton" class="danger-text" type="button">Clear my progress</button>
+            </div>
+          </div>
+        </div>
+        <div class="game-intro">
+          <div><p class="eyebrow">Find a person who...</p><h1 id="gameTitle"></h1></div>
+          <div class="progress-card" aria-label="Game progress">
+            <div class="progress-copy"><strong id="matchCount">0</strong><span>of 24 matched</span></div>
+            <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+          </div>
+        </div>
+        <div class="board-wrap">
+          <div class="bingo-letters" aria-hidden="true"><span>B</span><span>I</span><span>N</span><span>G</span><span>O</span></div>
+          <div id="bingoBoard" class="bingo-board" role="grid" aria-label="5 by 5 icebreaker bingo card"></div>
+        </div>
+        <p class="game-tip">Tap a square when you find someone who matches it. Add their name to claim it.</p>
+        <div id="liveRegion" class="sr-only" aria-live="polite"></div>
+      </section>
+    </main>
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce){
-  * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition: none !important; }
-}
+    <footer><span>Made for people worth meeting.</span><span>Private · No tracking · No account</span></footer>
 
-/* Base */
-*{ box-sizing: border-box; }
-html,body{ height:100%; }
-body{
-  font-family: var(--font-body);
-  color: var(--text);
-  text-align:center;
-  background: linear-gradient(135deg, var(--pink-1), #FFB6C1, #FFF0F5, #E6E6FA, #DDA0DD);
-  background-size: 400% 400%;
-  animation: gradientShift 8s ease infinite;
-  margin:0; padding:20px;
-}
-@keyframes gradientShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    <dialog id="nameDialog" class="dialog-card">
+      <form method="dialog" id="nameForm">
+        <button class="dialog-close" value="cancel" aria-label="Close" type="submit">×</button>
+        <p class="step-label">Nice find</p><h2 id="dialogPrompt"></h2>
+        <label for="personName">Who did you meet?</label>
+        <input id="personName" type="text" maxlength="40" autocomplete="off" placeholder="Enter their name" />
+        <div class="dialog-actions">
+          <button id="clearSquareButton" class="text-button danger-text" type="button">Clear square</button>
+          <button class="primary-button" value="save" type="submit">Claim square</button>
+        </div>
+      </form>
+    </dialog>
 
-h1{
-  font-family: var(--font-title);
-  color: var(--pink-2);
-font-size: clamp(2rem, 8vw, 3.5rem);
-  text-shadow: 2px 2px 0px #FFB6C1;
-  margin: 10px 0 8px;
-}
-h2{ color:#8B008B; margin: 6px 0 18px; }
+    <dialog id="howDialog" class="dialog-card how-dialog">
+      <form method="dialog">
+        <button class="dialog-close" value="close" aria-label="Close" type="submit">×</button>
+        <p class="step-label">How it works</p><h2>Three steps to better small talk.</h2>
+        <ol class="how-list">
+          <li><span>1</span><div><strong>Create</strong><p>Choose prompts that make sense for your crowd.</p></div></li>
+          <li><span>2</span><div><strong>Share</strong><p>Send the game link to everyone in the room.</p></div></li>
+          <li><span>3</span><div><strong>Mingle</strong><p>Find a match, add their name, and get five in a row.</p></div></li>
+        </ol>
+        <button class="primary-button wide" value="close" type="submit">Got it</button>
+      </form>
+    </dialog>
 
-.main-container{
-  background: rgba(255,255,255,.95);
-  border-radius: 15px;
-  padding: clamp(14px, 3.8vw, 30px);
-  box-shadow: var(--shadow);
-  border: 2px solid var(--pink-border);
-  max-width: 900px; margin: 0 auto;
-}
-
-/* Controls */
-.controls{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:12px; }
-.btn{
-  border:none; cursor:pointer; padding:12px 20px; border-radius: 999px;
-  font-weight:700; font-size:1rem;
-  box-shadow: 0 5px 15px rgba(255,105,180,.35);
-  background: linear-gradient(135deg, var(--pink-1), var(--pink-2));
-  color: var(--text-inv);
-}
-.btn:active{ transform: translateY(1px); }
-.btn-secondary{ background: #f0f0f0; color:#333; box-shadow:none; }
-.btn-outline{ background: transparent; color: var(--pink-2); border: 2px solid var(--pink-2); box-shadow:none; }
-.btn-primary{ background: linear-gradient(135deg,#9370DB,#8A2BE2); box-shadow:none; }
-
-/* Table */
-table{
-  width:100%;
-border-collapse: collapse;
-  table-layout: fixed;
-  margin: 10px auto 0;
-  border-radius: 10px; overflow: hidden;
-  background: #fff;
-  box-shadow: 0 5px 20px rgba(255,105,180,.25);
-}
-table.win{ box-shadow: 0 0 0 4px #32cd32 inset, 0 0 24px rgba(50,205,50,.45); }
-colgroup col{ width:20%; }
-
-thead th{
-  background: linear-gradient(135deg, var(--pink-1), var(--pink-2));
-  color: #fff;
-padding: clamp(8px, 3vw, 15px);
-font-size: clamp(16px, 5vw, 28px);
-  font-family: var(--font-title);
-}
-
-tbody td{
-  border: 2px solid var(--pink-border);
-  padding: 0; /* wrapper handles padding */
-  vertical-align: middle;
-  background: #fff;
-}
-
-/* The inner wrapper that fills the cell */
-.tile{
-  height: var(--tile-h);
-  width: 100%;
-  padding: 10px;
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  background: linear-gradient(145deg,#ffffff,var(--pink-3));
-  transition: background .2s ease, box-shadow .2s ease;
-  text-align: center;
-  white-space: normal; overflow-wrap: break-word; word-break: normal; hyphens: auto;
-  font-weight: 600;
-  font-size: clamp(9px, 2.2vw, 12px);
-}
-tbody td:hover .tile{ background: linear-gradient(145deg, var(--pink-4), #FFF0F5); box-shadow: var(--inset); }
-
-.tile.marked{
-  background: linear-gradient(135deg, var(--pink-1), var(--pink-2));
-  color: #fff;
-  box-shadow: 0 0 0 3px rgba(255,255,255,.35) inset, 0 6px 16px rgba(255,105,180,.35);
-}
-.tile.free{
-  background: linear-gradient(135deg, var(--pink-1), var(--pink-2));
-  color: #fff; font-weight: 800;
-}
-
-.trait-text{ font-size: .92em; line-height: 1.2; margin-bottom: 4px; padding: 0 6px; }
-.person-name{ font-size: 1.05em; font-weight: 800; line-height: 1.2; padding: 0 6px; }
-
-/* Modal */
-.name-modal{
-  position: fixed; inset: 0; display: none; place-items: center;
-  background: rgba(0,0,0,.7); z-index: 1000;
-}
-.name-modal-content{
-  background: #fff; color: #333;
-  border-radius: 15px; padding: 22px; width: min(92vw, 420px); text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,.3);
-}
-.name-modal h3{ margin: 0 0 12px; color: #8B008B; }
-.modal-help{ margin: 0 0 12px; color: #666; font-size: .9rem; }
-.name-modal input{
-  width: 100%; padding: 14px; border: 3px solid #9370DB; border-radius: 10px; text-align: center; margin-bottom: 14px; font-size: 1rem;
-}
-.name-modal .buttons{ display: flex; gap: 10px; }
-
-/* A11y helpers */
-.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-
-/* Mobile tweaks */
-@media (max-width:480px){
-  thead th{ font-size: clamp(18px, 6vw, 24px); }
-  :root{ --tile-h: clamp(110px, 30vw, 160px); }
-}
-</style>
-</head>
-<body>
-  <div class="main-container">
-    <h1> Icebreaker Bingo Game </h1>
-    <h2>Mingle and find someone for each square.</h2>
-
-    <div class="controls">
-      <button id="shuffleBtn" class="btn">Shuffle Board</button>
+    <div id="winOverlay" class="win-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="winTitle">
+      <div class="win-card"><div class="win-burst" aria-hidden="true">✦</div><p class="eyebrow">Five in a row</p><h2 id="winTitle">That’s bingo!</h2><p>You came for the game. You stayed for the people.</p><button id="keepPlayingButton" class="primary-button" type="button">Keep playing</button></div>
     </div>
-
-    <table aria-label="Icebreaker Bingo Board - 5 by 5 grid" role="grid">
-      <colgroup><col/><col/><col/><col/><col/></colgroup>
-      <tbody id="bingo-body"></tbody>
-    </table>
-
-    <!-- Screen-reader live region for announcements -->
-    <div id="live" aria-live="polite" class="sr-only"></div>
-  </div>
-
-  <!-- Name Modal -->
-  <div id="nameModal" class="name-modal" role="dialog" aria-modal="true" aria-labelledby="modalTrait" aria-describedby="modalHelp">
-    <div class="name-modal-content">
-      <h3 id="modalTrait">Found someone! 😊</h3>
-      <p id="modalHelp" class="modal-help">Enter their name:</p>
-      <input id="nameInput" type="text" placeholder="Type their name" maxlength="32" autocomplete="off" />
-      <div class="buttons">
-        <button id="submitName" class="btn btn-primary">Submit</button>
-        <button id="cancelName" class="btn btn-secondary">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-<script>
-/* ========= CONFIG ========= */
-const BOARD_SIZE = 5;
-const FREE_ENABLED = true; // set to false to disable free center tile
-
-// Guest data: each guest with their traits
-const ABHISHEK_GUESTS = [
-  { name: "Atharva", traits: ["Nominated for Latin Grammy", "Works in the Music industry"] },
-  { name: "Siddhesh", traits: ["Dad's a builder", "Biked perimeter of Manhattan"] },
-  { name: "Ruta", traits: ["Eats ants", "Insane Dance Energy"] },
-  { name: "Mansi", traits: ["Can be lured by kittens 😺"] },
-  { name: "Nikhil", traits: ["Ran 1:44 half-marathon", '"AWS down, GCP up" guy'] },
-  { name: "Ronak", traits: ["Took down AWS today"] },
-  { name: "Shreya", traits: ["Has 1.2M views on Insta reel"] },
-  { name: "Geet", traits: ["Hates Windows, loves Linux", "Rage-posts on Twitter"] }
-];
-
-const KANKSHA_GUESTS = [
-  { name: "Gitika", traits: ["Pilot ✈️", "Co-founded a startup"] },
-  { name: "Avais", traits: ["Lived in 3 countries"] },
-  { name: "Dhruvil", traits: ["Works at top asset mgr", "Went to Croatia 🇭🇷"] },
-  { name: "Mrugakshi", traits: ["Went to Croatia 🇭🇷", "Proposed in Central Park 💍"] },
-  { name: "Parthvi", traits: ["Watches Grey's Anatomy", "Volunteers for Girls on the Run"] },
-  { name: "Vincchi", traits: ["Obsessed with Germany", "Hates Kohli, loves Sachin"] },
-  { name: "Shyen", traits: ["Never lived in JC", "Not a cricketer, sounds like one"] },
-  { name: "Maitrei", traits: ["Rewatches Modern Family", "Can fix your back pain "] },
-  { name: "Shrey", traits: ["Rewatches Modern Family", "Shares b'day with SRK 🎂"] },
-  { name: "Nidhi", traits: ["Professional singer", "Continues to eats Jain food"] },
-  { name: "Abhishek", traits: ["Jewelry advice pro 💎"] }
-];
-
-// Generate balanced trait list
-function generateBalancedTraits(guests, targetCount) {
-  const allTraits = [];
-  const allUniqueTraits = [];
-  
-  // Collect all traits (first pass: ensure one per guest, second pass: add remaining)
-  guests.forEach(guest => {
-    if (guest.traits.length > 0) {
-      allUniqueTraits.push(guest.traits[0]); // Add first trait
-    }
-  });
-  
-  // Add all other traits
-  guests.forEach(guest => {
-    for (let i = 1; i < guest.traits.length; i++) {
-      allUniqueTraits.push(guest.traits[i]);
-    }
-  });
-  
-  // Now fill allTraits up to targetCount
-  let index = 0;
-  while (allTraits.length < targetCount) {
-    if (allUniqueTraits.length === 0) {
-      console.warn(`Not enough traits for guests. Need ${targetCount}, have 0.`);
-      break;
-    }
-    allTraits.push(allUniqueTraits[index % allUniqueTraits.length]);
-    index++;
-  }
-  
-  return allTraits;
-}
-
-// Calculate needed traits per host (24 total, minus free cell)
-const TRAITS_PER_HOST = 12;
-const abhishekTraits = generateBalancedTraits(ABHISHEK_GUESTS, TRAITS_PER_HOST);
-const kankshaTraits = generateBalancedTraits(KANKSHA_GUESTS, TRAITS_PER_HOST);
-const BINGO_ITEMS = [...abhishekTraits, ...kankshaTraits];
-
-console.log('Abhishek traits:', abhishekTraits.length, abhishekTraits);
-console.log('Kanksha traits:', kankshaTraits.length, kankshaTraits);
-console.log('Total BINGO_ITEMS:', BINGO_ITEMS.length, BINGO_ITEMS);
-
-/* ========= SEED & STORAGE ========= */
-const params = new URLSearchParams(location.search);
-const SEED = Number(params.get("seed")) || Math.floor(Math.random()*1e9);
-if (!params.get("seed")) {
-  const url = new URL(location.href);
-  url.searchParams.set("seed", String(SEED));
-  history.replaceState(null, "", url);
-}
-const STORAGE_KEY = `bingo:v2:seed:${SEED}:size:${BOARD_SIZE}`;
-
-/* ========= DOM ========= */
-const tbody = document.getElementById("bingo-body");
-const shuffleBtn = document.getElementById("shuffleBtn");
-
-const modal = document.getElementById("nameModal");
-const nameInput = document.getElementById("nameInput");
-const modalTrait = document.getElementById("modalTrait");
-const live = document.getElementById("live");
-
-/* ========= STATE ========= */
-let board = [];          // 2D array of trait strings
-let marked = [];         // 2D boolean array
-let names = [];          // 2D array of entered names or ""
-let currentTile = null;  // reference to .tile being edited
-
-/* ========= UTILS ========= */
-function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t^=t+Math.imul(t^t>>>7,61|t); return ((t^t>>>14)>>>0)/4294967296; } }
-function shuffleSeeded(arr, seed){
-  const rng = mulberry32(seed);
-  const a = arr.slice();
-  for(let i=a.length-1; i>0; i--){
-    const j = Math.floor(rng()*(i+1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-const mid = Math.floor(BOARD_SIZE/2);
-const hasFree = () => FREE_ENABLED && (BOARD_SIZE % 2 === 1); // center exists only for odd sizes
-
-function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({ board, marked, names })); }
-function load(){ try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || ""); } catch { return null; } }
-
-/* ========= BOARD GENERATION ========= */
-function generateBoard(seed = SEED){
-  board = Array.from({length: BOARD_SIZE}, () => Array(BOARD_SIZE).fill(""));
-  marked = Array.from({length: BOARD_SIZE}, () => Array(BOARD_SIZE).fill(false));
-  names  = Array.from({length: BOARD_SIZE}, () => Array(BOARD_SIZE).fill(""));
-
-  const need = BOARD_SIZE*BOARD_SIZE - (hasFree() ? 1 : 0);
-  if (BINGO_ITEMS.length < need) console.warn(`Not enough items for the board. Need ${need}, have ${BINGO_ITEMS.length}`);
-
-  const pool = shuffleSeeded(BINGO_ITEMS, seed).slice(0, need);
-  console.log('Pool for board:', pool.length, pool);
-  let k = 0;
-
-  for (let r=0; r<BOARD_SIZE; r++){
-    for (let c=0; c<BOARD_SIZE; c++){
-      if (hasFree() && r===mid && c===mid) {
-        board[r][c] = "You! 🎉";
-        marked[r][c] = true;
-      } else {
-        board[r][c] = pool[k++] || "";
-      }
-    }
-  }
-  renderBoard();
-  save();
-}
-
-function renderBoard(){
-  tbody.innerHTML = "";
-  for (let r=0; r<BOARD_SIZE; r++){
-    const tr = document.createElement("tr");
-    for (let c=0; c<BOARD_SIZE; c++){
-      const td = document.createElement("td");
-      td.setAttribute("role","gridcell");
-      td.dataset.r = r; td.dataset.c = c;
-
-      const tile = document.createElement("div");
-      tile.className = "tile";
-      tile.tabIndex = 0;
-
-      const trait = board[r][c];
-      const name  = names[r][c];
-
-      if (hasFree() && r===mid && c===mid){
-        tile.classList.add("free");
-        tile.textContent = "You! 🎉";
-        td.setAttribute("aria-pressed","true");
-      } else if (marked[r][c] && name){
-        tile.classList.add("marked");
-        tile.replaceChildren(
-          el("div",{className:"trait-text", textContent:trait}),
-          el("div",{className:"person-name", textContent:name})
-        );
-        td.setAttribute("aria-pressed","true");
-      } else {
-        tile.textContent = trait;
-        td.setAttribute("aria-pressed","false");
-      }
-
-      td.appendChild(tile);
-      tr.appendChild(td);
-    }
-    tbody.appendChild(tr);
-  }
-}
-
-function el(tag, props){ const n = document.createElement(tag); Object.assign(n, props); return n; }
-
-/* ========= BINGO CHECK ========= */
-function checkBingo(r,c){
-  const N = BOARD_SIZE;
-  const row = marked[r].every(Boolean);
-  const col = marked.every(row => row[c]);
-  const diag1 = [...Array(N).keys()].every(i => marked[i][i]);
-  const diag2 = [...Array(N).keys()].every(i => marked[i][N-1-i]);
-  return row || col || diag1 || diag2;
-}
-function announceBingo(){
-  live.textContent = "Bingo! You got 5 in a row! 🎉";
-  const tbl = document.querySelector("table");
-  tbl.classList.add("win");
-  setTimeout(()=> tbl.classList.remove("win"), 1200);
-}
-
-/* ========= MODAL ========= */
-function openModal(tile, r, c){
-  currentTile = { tile, r, c };
-  modalTrait.textContent = `Found someone! 😊`;
-  const helpText = document.getElementById("modalHelp");
-  helpText.textContent = `${board[r][c]} — Enter their name:`;
-  nameInput.value = names[r][c] || "";
-  modal.style.display = "grid";
-  setTimeout(()=> nameInput.focus(), 0);
-
-  // focus trap + Esc
-  modal.onkeydown = (e) => {
-    if (e.key === "Escape"){ closeModal(); }
-    if (e.key === "Tab"){
-      const f = modal.querySelectorAll('button, [href], input'); 
-      if (!f.length) return;
-      const first=f[0], last=f[f.length-1];
-      if (e.shiftKey && document.activeElement===first){ last.focus(); e.preventDefault(); }
-      else if (!e.shiftKey && document.activeElement===last){ first.focus(); e.preventDefault(); }
-    }
-  };
-}
-function closeModal(){ modal.style.display = "none"; modal.onkeydown = null; currentTile = null; }
-function submitName(){
-  if (!currentTile) return closeModal();
-  const name = nameInput.value.trim().slice(0,32);
-  const { tile, r, c } = currentTile;
-  if (!name){ closeModal(); return; }
-
-  names[r][c] = name;
-  marked[r][c] = true;
-
-  tile.classList.add("marked");
-  tile.replaceChildren(
-    el("div",{className:"trait-text", textContent: board[r][c]}),
-    el("div",{className:"person-name", textContent: name})
-  );
-  tile.parentElement.setAttribute("aria-pressed","true");
-
-  if (checkBingo(r,c)) announceBingo();
-  save();
-  closeModal();
-}
-
-/* ========= EVENTS ========= */
-/* Event delegation: one listener for all tiles */
-tbody.addEventListener("click", (e)=>{
-  const tile = e.target.closest(".tile");
-  if (!tile) return;
-  const td = tile.parentElement;
-  const r = Number(td.dataset.r), c = Number(td.dataset.c);
-  if (hasFree() && r===mid && c===mid) return;
-  openModal(tile, r, c);
-});
-
-tbody.addEventListener("keydown", (e)=>{
-  if (e.key !== "Enter" && e.key !== " ") return;
-  const tile = e.target.closest(".tile");
-  if (!tile) return;
-  e.preventDefault();
-  tile.click();
-});
-
-document.getElementById("submitName").addEventListener("click", submitName);
-document.getElementById("cancelName").addEventListener("click", closeModal);
-document.getElementById("nameModal").addEventListener("click", (e)=> { if (e.target.id === "nameModal") closeModal(); });
-nameInput.addEventListener("keydown", (e)=> { if (e.key === "Enter") submitName(); });
-
-shuffleBtn.addEventListener("click", ()=>{
-  const newSeed = Math.floor(Math.random()*1e9);
-  const url = new URL(location.href);
-  url.searchParams.set("seed", String(newSeed));
-  history.replaceState(null, "", url);
-  localStorage.removeItem(STORAGE_KEY);
-  location.reload();
-});
-
-/* ========= INIT ========= */
-(function init(){
-  const restored = load();
-  if (restored && restored.board && restored.marked && restored.names){
-    board = restored.board; marked = restored.marked; names = restored.names;
-    renderBoard();
-  } else {
-    generateBoard(SEED);
-  }
-})();
-</script>
-</body>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="app.js"></script>
+  </body>
 </html>
