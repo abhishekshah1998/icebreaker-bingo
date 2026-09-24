@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0e1713" />
+    <meta name="description" content="Create and manage an Icebreaker Bingo event." />
+    <title>Host Studio · Icebreaker Bingo</title>
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="admin-shell">
+    <header class="site-header admin-header">
+      <a class="brand inverse" href="admin.html" aria-label="Icebreaker Bingo host studio"><span class="brand-mark" aria-hidden="true">B</span><span>Host Studio</span></a>
+      <div class="header-actions"><span class="portal-badge admin-badge">Admin</span><a class="header-link" href="./">Player portal ↗</a></div>
+    </header>
+
+    <main class="admin-main">
+      <section class="admin-intro">
+        <p class="eyebrow">Private event builder</p>
+        <h1>Create the people behind the prompts.</h1>
+        <p>Add a guest name and one prompt that uniquely describes them. Players will see the prompts and try to match the right person.</p>
+        <div class="admin-steps">
+          <div><span>1</span><p><strong>Add guests</strong>Name + prompt</p></div>
+          <div><span>2</span><p><strong>Generate</strong>One player link</p></div>
+          <div><span>3</span><p><strong>Share</strong>Let the room mingle</p></div>
+        </div>
+      </section>
+
+      <form id="adminForm" class="admin-panel" novalidate>
+        <div class="admin-section">
+          <label for="eventName">Event name</label>
+          <input id="eventName" type="text" maxlength="60" value="Tonight's Icebreaker" autocomplete="off" />
+        </div>
+
+        <div class="entry-heading">
+          <div><p class="section-kicker">Guest directory</p><h2>Name + prompt</h2><p id="entryCount" class="entry-count">0 complete · 24 required</p></div>
+          <div class="entry-actions"><button id="sampleButton" class="admin-secondary" type="button">Load demo</button><button id="addButton" class="admin-secondary" type="button">+ Add row</button></div>
+        </div>
+
+        <div class="entry-labels" aria-hidden="true"><span>Guest name</span><span>Prompt players will see</span><span></span></div>
+        <div id="entryList" class="entry-list"></div>
+        <p id="adminError" class="form-error" role="alert"></p>
+        <button class="admin-primary" type="submit">Generate player link <span aria-hidden="true">→</span></button>
+        <p class="admin-privacy">The link contains the guest names and prompts in encoded form. Avoid sensitive information.</p>
+
+        <section id="linkResult" class="link-result" hidden aria-labelledby="linkTitle">
+          <div class="success-mark" aria-hidden="true">✓</div>
+          <div><p class="section-kicker">Player link ready</p><h2 id="linkTitle">Your game is ready to share.</h2></div>
+          <label for="playerLink">Player URL</label>
+          <div class="link-row"><input id="playerLink" type="text" readonly /><button id="copyButton" class="admin-secondary" type="button">Copy</button></div>
+          <a id="openPlayerButton" class="admin-primary centered" href="./" target="_blank" rel="noopener">Open player game ↗</a>
+        </section>
+      </form>
+    </main>
+    <footer class="admin-footer"><span>Host Studio</span><span>Draft autosaves on this device</span></footer>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="admin.js"></script>
+  </body>
+</html>

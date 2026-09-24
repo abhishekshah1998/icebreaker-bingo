@@ -4,68 +4,42 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#15271f" />
-    <meta name="description" content="Create and share a playful icebreaker bingo card for your next gathering." />
+    <meta name="description" content="Play a private icebreaker bingo game." />
     <title>Icebreaker Bingo</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="player-shell">
     <header class="site-header">
-      <a class="brand" href="./" aria-label="Icebreaker Bingo home">
-        <span class="brand-mark" aria-hidden="true">B</span><span>Icebreaker Bingo</span>
-      </a>
-      <button id="howButton" class="text-button" type="button">How it works</button>
+      <a class="brand" href="./" aria-label="Icebreaker Bingo player home"><span class="brand-mark" aria-hidden="true">B</span><span>Icebreaker Bingo</span></a>
+      <span class="portal-badge">Player</span>
     </header>
 
     <main>
-      <section id="setupView" class="setup-view" aria-labelledby="setupTitle">
-        <div class="hero-copy">
-          <p class="eyebrow">Better conversations, one square at a time</p>
-          <h1 id="setupTitle">Turn any room into a conversation.</h1>
-          <p class="hero-lede">Create a bingo card for your gathering, share one link, and let guests do the mingling. No sign-up required.</p>
-          <div class="feature-row" aria-label="Product highlights">
-            <span>Private by design</span><span>Works on any phone</span><span>Ready in 2 minutes</span>
-          </div>
-        </div>
-
-        <form id="setupForm" class="setup-card" novalidate>
-          <div class="card-heading">
-            <div><p class="step-label">Create your game</p><h2>What are we celebrating?</h2></div>
-            <span class="card-number" aria-hidden="true">01</span>
-          </div>
-          <label for="eventName">Event name</label>
-          <input id="eventName" name="eventName" type="text" maxlength="60" value="Tonight's Icebreaker" autocomplete="off" />
-          <div class="prompt-heading"><label for="prompts">Bingo prompts</label><span id="promptCount" class="count-pill">24 / 24</span></div>
-          <p class="field-help">One prompt per line. Add at least 24 unique prompts.</p>
-          <textarea id="prompts" name="prompts" rows="12" spellcheck="true"></textarea>
-          <div class="template-row">
-            <span>Start with:</span>
-            <button class="chip" type="button" data-pack="social">Social mixer</button>
-            <button class="chip" type="button" data-pack="work">Team event</button>
-            <button class="chip" type="button" data-pack="wedding">Wedding</button>
-          </div>
-          <p id="setupError" class="form-error" role="alert"></p>
-          <button class="primary-button wide" type="submit">Create my bingo <span aria-hidden="true">→</span></button>
-          <p class="privacy-note">No account or database. Your game setup travels in the share link.</p>
-        </form>
+      <section id="playerWelcome" class="player-welcome" aria-labelledby="welcomeTitle">
+        <div class="welcome-mark" aria-hidden="true">BINGO</div>
+        <p class="eyebrow">You’re in the player portal</p>
+        <h1 id="welcomeTitle">Ready when your host is.</h1>
+        <p>Open the player link shared by your host to load your event and start matching names to prompts.</p>
+        <a class="primary-button" href="admin.html">Open host studio</a>
       </section>
 
       <section id="gameView" class="game-view" hidden aria-labelledby="gameTitle">
         <div class="game-toolbar">
-          <button id="backButton" class="text-button back-button" type="button">← Edit game</button>
+          <div class="player-status"><span class="status-dot"></span> Player card</div>
           <div class="toolbar-actions">
-            <button id="shareButton" class="secondary-button" type="button">Copy game link</button>
+            <button id="shareButton" class="secondary-button" type="button">Copy player link</button>
             <button id="printButton" class="icon-button" type="button" aria-label="Print bingo card" title="Print card">⌁</button>
             <button id="moreButton" class="icon-button" type="button" aria-expanded="false" aria-controls="gameMenu" aria-label="More game options">•••</button>
             <div id="gameMenu" class="game-menu" hidden>
-              <button id="newCardButton" type="button">Shuffle into a new card</button>
+              <button id="newCardButton" type="button">Shuffle my card</button>
               <button id="resetButton" class="danger-text" type="button">Clear my progress</button>
             </div>
           </div>
         </div>
         <div class="game-intro">
-          <div><p class="eyebrow">Find a person who...</p><h1 id="gameTitle"></h1></div>
+          <div><p class="eyebrow">Find the guest who...</p><h1 id="gameTitle"></h1></div>
           <div class="progress-card" aria-label="Game progress">
             <div class="progress-copy"><strong id="matchCount">0</strong><span>of 24 matched</span></div>
             <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
@@ -75,41 +49,29 @@
           <div class="bingo-letters" aria-hidden="true"><span>B</span><span>I</span><span>N</span><span>G</span><span>O</span></div>
           <div id="bingoBoard" class="bingo-board" role="grid" aria-label="5 by 5 icebreaker bingo card"></div>
         </div>
-        <p class="game-tip">Tap a square when you find someone who matches it. Add their name to claim it.</p>
+        <p class="game-tip">Meet people, tap a prompt, then choose the guest who matches it.</p>
         <div id="liveRegion" class="sr-only" aria-live="polite"></div>
       </section>
     </main>
 
-    <footer><span>Made for people worth meeting.</span><span>Private · No tracking · No account</span></footer>
+    <footer><span>Player portal</span><span>Progress stays on this device</span></footer>
 
-    <dialog id="nameDialog" class="dialog-card">
-      <form method="dialog" id="nameForm">
+    <dialog id="matchDialog" class="dialog-card">
+      <form method="dialog" id="matchForm">
         <button class="dialog-close" value="cancel" aria-label="Close" type="submit">×</button>
-        <p class="step-label">Nice find</p><h2 id="dialogPrompt"></h2>
-        <label for="personName">Who did you meet?</label>
-        <input id="personName" type="text" maxlength="40" autocomplete="off" placeholder="Enter their name" />
+        <p class="step-label">Make the match</p><h2 id="dialogPrompt"></h2>
+        <label for="guestName">Which guest matches this prompt?</label>
+        <select id="guestName" required><option value="">Choose a name</option></select>
+        <p id="matchError" class="match-error" role="alert"></p>
         <div class="dialog-actions">
           <button id="clearSquareButton" class="text-button danger-text" type="button">Clear square</button>
-          <button class="primary-button" value="save" type="submit">Claim square</button>
+          <button class="primary-button" value="save" type="submit">Check match</button>
         </div>
       </form>
     </dialog>
 
-    <dialog id="howDialog" class="dialog-card how-dialog">
-      <form method="dialog">
-        <button class="dialog-close" value="close" aria-label="Close" type="submit">×</button>
-        <p class="step-label">How it works</p><h2>Three steps to better small talk.</h2>
-        <ol class="how-list">
-          <li><span>1</span><div><strong>Create</strong><p>Choose prompts that make sense for your crowd.</p></div></li>
-          <li><span>2</span><div><strong>Share</strong><p>Send the game link to everyone in the room.</p></div></li>
-          <li><span>3</span><div><strong>Mingle</strong><p>Find a match, add their name, and get five in a row.</p></div></li>
-        </ol>
-        <button class="primary-button wide" value="close" type="submit">Got it</button>
-      </form>
-    </dialog>
-
     <div id="winOverlay" class="win-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="winTitle">
-      <div class="win-card"><div class="win-burst" aria-hidden="true">✦</div><p class="eyebrow">Five in a row</p><h2 id="winTitle">That’s bingo!</h2><p>You came for the game. You stayed for the people.</p><button id="keepPlayingButton" class="primary-button" type="button">Keep playing</button></div>
+      <div class="win-card"><div class="win-burst" aria-hidden="true">✦</div><p class="eyebrow">Five in a row</p><h2 id="winTitle">That’s bingo!</h2><p>You found the stories behind the squares.</p><button id="keepPlayingButton" class="primary-button" type="button">Keep playing</button></div>
     </div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script type="module" src="app.js"></script>
