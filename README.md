@@ -2,6 +2,11 @@
 
 A private, shareable icebreaker game for parties, weddings, and team events. Hosts pair guest names with prompts in a dedicated admin portal; players use a separate game link to match each prompt to the right person.
 
+## Live app
+
+- [Host Studio](https://abhishekshah1998.github.io/icebreaker-bingo/admin.html)
+- [Player portal](https://abhishekshah1998.github.io/icebreaker-bingo/)
+
 ## Product principles
 
 - **Separate portals:** `admin.html` is the host builder and `index.html` is the player-only game.
