@@ -5,7 +5,7 @@ const elements = {
   welcome: $("#playerWelcome"), gameView: $("#gameView"), gameTitle: $("#gameTitle"), board: $("#bingoBoard"),
   matchCount: $("#matchCount"), progressBar: $("#progressBar"), shareButton: $("#shareButton"), printButton: $("#printButton"),
   moreButton: $("#moreButton"), gameMenu: $("#gameMenu"), newCardButton: $("#newCardButton"), resetButton: $("#resetButton"),
-  matchDialog: $("#matchDialog"), matchForm: $("#matchForm"), dialogPrompt: $("#dialogPrompt"), guestName: $("#guestName"),
+  matchDialog: $("#matchDialog"), closeMatchDialog: $("#closeMatchDialog"), matchForm: $("#matchForm"), dialogPrompt: $("#dialogPrompt"), guestName: $("#guestName"),
   matchError: $("#matchError"), clearSquareButton: $("#clearSquareButton"), liveRegion: $("#liveRegion"),
   winOverlay: $("#winOverlay"), keepPlayingButton: $("#keepPlayingButton"), toast: $("#toast")
 };
@@ -119,6 +119,14 @@ elements.matchForm.addEventListener("submit", (event) => {
 });
 elements.clearSquareButton.addEventListener("click", () => {
   claims[activeSquare] = ""; saveProgress(); elements.matchDialog.close(); renderBoard(); showToast("Square cleared");
+});
+elements.closeMatchDialog.addEventListener("click", () => elements.matchDialog.close());
+elements.matchDialog.addEventListener("click", (event) => {
+  if (event.target === elements.matchDialog) elements.matchDialog.close();
+});
+elements.matchDialog.addEventListener("close", () => {
+  activeSquare = null;
+  elements.matchError.textContent = "";
 });
 elements.shareButton.addEventListener("click", copyLink);
 elements.printButton.addEventListener("click", () => window.print());
